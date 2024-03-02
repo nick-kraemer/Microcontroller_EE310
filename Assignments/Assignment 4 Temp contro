@@ -1,3 +1,4 @@
+
 // Title: Heating and cooling system
 //-----------------------------
 // Purpose: This program takes input refrence temperature and compares it to an input measured temperature.
@@ -40,6 +41,7 @@
 #define   HEATER  PORTD,2
 #define   COOLER  PORTD,1
 
+
 ;------------------------
     ORG 0x20	;start program memory at 0x20
     MOVLW 0x00
@@ -51,48 +53,41 @@
 
 	
 	
-
+	
+	
     MOVLW   measuredTempInput
     CPFSEQ  refTempREG ;if reference temp = measured temp skip
     GOTO HEAT
-    MOVLW 0x0
-    MOVWF contREG	;set conreg=0
     GOTO LED_OFF	
 	
 HEAT 
     MOVLW   measuredTempInput
     CPFSGT  refTempREG ; if reference temp > measured temp skip (too cold)
     GOTO COOL
-    MOVLW 0x1
-    MOVWF contREG	;set conreg=1
     GOTO LED_HEAT
     
 COOL	
     MOVLW   measuredTempInput
     CPFSLT	refTempREG ; compare reference temp with measured temp if < skip (too hot)
-    GOTO sleep ; if the code made it here there is an error
-    MOVLW 0x2
-    MOVWF contREG	;set conreg=2
+    sleep ; if the code made it here there is an error
     GOTO LED_COOL
 	
 LED_OFF 
     MOVLW 0x00
-    MOVWF PORTD
+    MOVWF contREG	;set conreg=0
+    MOVWF PORTD,a
     sleep
 
 LED_HEAT
+    MOVLW 0x1
+    MOVWF contREG 	;set conreg=1
     MOVLW 0b00000001
-    MOVWF PORTD
+    MOVWF PORTD ,a
     sleep
 
 LED_COOL 
+    MOVLW 0x2
+    MOVWF contREG 	;set conreg=2
     MOVLW 0b00000010
-    MOVWF PORTD
+    MOVWF PORTD,a
     sleep
-
-
-
-
-
-
-
