@@ -1,1 +1,44 @@
+// Title: Heating and cooling system
+//-----------------------------
+// Purpose: This program takes input refrence temperature and compares it to an input measured temperature.
+//	    The values of the reference temp is placed into Reg 0x60,0x61,0x62
+//	    The values of the measured temp is placed into Reg 0x70,0x71,0x72
+//	    If the temp is to hot a cooling system is turned on. If the temp is too cold a heating system is turned on
+// Dependencies:I'am using a file called Header.inc attacted to this project.
+// Compiler: ASM 2.4
+// Author: Nick Kraemer
+// OUTPUTS: outputs of this program? What are they connected to? 
+// INPUTS: inputs of this program? What are they connected to? 
+// Versions:
+//  	V1.0: today’s date - First version 
+//  	V1.2: date - Changes something….
+//-----------------------------
+; Initialization
+;---------------------
+#include "C:\Users\nkrae\OneDrive\Documents\310 MPlab Assignments\Assignment 4.X\Header.inc.inc"
+#include <xc.inc>
+    
+    
+// PROGRAM INPUTS
+//----------------
+#define  measuredTempInput 	45 ; this is the input value
+#define  refTempInput 		65 ; this is the input value
+
+//----------------
+//REGISTERS
+//----------------
+#define  measuredTempREG 	0x21 ; this is Reg where measured temp is stored
+#define  refTempREG 		0x20 ; this is Reg where RefTemp is stored
+#define  contREG		0x22; This is REG where the contREG is stored
+
+
+//----------------
+// PROGRAM OUTPUTS
+//----------------
+;#define  measuredTempDecimal 	0x70 
+;#define  refTempInputDecimal      
+#define   HEATER  PORTD,2
+#define   COOLER  PORTD,1
+
+
 
