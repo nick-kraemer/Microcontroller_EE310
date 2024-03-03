@@ -42,7 +42,7 @@
 #define   COOLER  PORTD,1
 
 
-;------------------------
+;-----------MAIN CODE------------------
     ORG 0x20	;start program memory at 0x20
     MOVLW 0x00
     MOVWF	TRISD	; make PORTD an output
@@ -51,43 +51,43 @@
     MOVLW   refTempInput
     MOVWF   refTempREG  ; put reference temp into reference temp REG
 
-	
-	
+
+    
 	
 	
     MOVLW   measuredTempInput
     CPFSEQ  refTempREG ;if reference temp = measured temp skip
-    GOTO HEAT
-    GOTO LED_OFF	
+    GOTO _HEAT
+    GOTO _LED_OFF	
 	
-HEAT 
+_HEAT: 
     MOVLW   measuredTempInput
     CPFSGT  refTempREG ; if reference temp > measured temp skip (too cold)
-    GOTO COOL
-    GOTO LED_HEAT
+    GOTO _COOL
+    GOTO _LED_HEAT
     
-COOL	
+_COOL:	
     MOVLW   measuredTempInput
     CPFSLT	refTempREG ; compare reference temp with measured temp if < skip (too hot)
     sleep ; if the code made it here there is an error
-    GOTO LED_COOL
+    GOTO _LED_COOL
 	
-LED_OFF 
+_LED_OFF: 
     MOVLW 0x00
-    MOVWF contREG	;set conreg=0
+    MOVWF contREG	;set contreg=0
     MOVWF PORTD,a
     sleep
 
-LED_HEAT
+_LED_HEAT:
     MOVLW 0x1
-    MOVWF contREG 	;set conreg=1
+    MOVWF contREG 	;set contreg=1
     MOVLW 0b00000001
     MOVWF PORTD ,a
     sleep
 
-LED_COOL 
+_LED_COOL: 
     MOVLW 0x2
-    MOVWF contREG 	;set conreg=2
+    MOVWF contREG 	;set contreg=2
     MOVLW 0b00000010
     MOVWF PORTD,a
     sleep
