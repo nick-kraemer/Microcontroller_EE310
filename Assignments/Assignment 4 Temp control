@@ -22,22 +22,23 @@
     
 // PROGRAM INPUTS
 //----------------
-#define  measuredTempInput 	60 ; this is the input value
-#define  refTempInput 		10 ; this is the input value
+#define  refTempInput 		47 ; this is the input value
+#define  measuredTempInput 	0 ; this is the input value
 
-//----------------
+
+//----- -----------
 //REGISTERS
 //----------------
 #define  measuredTempREG 	0x21 ; this is Reg where measured temp is stored
 #define  refTempREG 		0x20 ; this is Reg where RefTemp is stored
 #define  contREG		0x22; This is REG where the contREG is stored
-#define  maximumTEMP		0x10; this reg will help me determine if Measured temp is negative
+#define  maximumTEMP		0x00; this reg will help me determine if Measured temp is negative
 
 //----------------
 // PROGRAM OUTPUTS
 //----------------
-;#define  measuredTempDecimal 	0x70 
-;#define  refTempInputDecimal      
+
+    
 #define   HEATER  PORTD,2
 #define   COOLER  PORTD,1
 
@@ -51,17 +52,74 @@
     MOVWF   measuredTempREG ; put measure temp into measured temp Reg
     MOVLW   refTempInput
     MOVWF   refTempREG  ; put reference temp into reference temp REG
+   
+;-------------------------------------------
+;NUME EQU 0x40 ; location for NUME
+;QU EQU	0x10 ; location for the quotient
+RMND_L	EQU 0x60
+RMND_M EQU  0x61
+RMND_H EQU 0x62
+MYDEN EQU 0x0A
+mynum EQU measuredTempInput	
 
+MOVLW mynum
+MOVWF NUME
+MOVLW MYDEN
+_D_1:
+    INCF QU,F
+    SUBWF NUME
+    BC _D_1
+    ADDWF NUME
+    DECF QU,f
+    MOVFF NUME, RMND_L ; save the first digit
+    MOVFF QU,NUME
+    CLRF QU 
+_D_2:
+    INCF    QU,F
+    SUBWF   NUME
+    BC	_D_2
+    ADDWF NUME
+    DECF QU,F
+    MOVFF NUME, RMND_M
+    MOVFF QU,RMND_H
+    ;-------------------------------------------
+NUME EQU 0x40 ; location for NUME
+QU EQU	0x10 ; location for the quotient
+ref_RMND_L	EQU 0x70
+ref_RMND_M EQU  0x71
+ref_RMND_H EQU 0x72
 
-     
-    ;MOVLW 0x00
-    ;MOVWF STATUS
-    MOVLW 0x51
-    MOVWF maximumTEMP
+refmynum EQU refTempInput	
+
+CLRF QU
+MOVLW refmynum
+MOVWF NUME
+MOVLW MYDEN
+_ref_D_1:
+    INCF QU,F
+    SUBWF NUME
+    BC _ref_D_1
+    ADDWF NUME
+    DECF QU,f
+    MOVFF NUME, ref_RMND_L ; save the first digit
+    MOVFF QU,NUME
+    CLRF QU 
+_ref_D_2:
+    INCF    QU,F
+    SUBWF   NUME
+    BC	_ref_D_2
+    ADDWF NUME
+    DECF QU,F
+    MOVFF NUME, ref_RMND_M
+    MOVFF QU,ref_RMND_H
+    ;-----------------------------------
+    
+    MOVLW 61
+    MOVWF maximumTEMP ;maxtemp=61
     MOVLW measuredTempInput
-    CPFSLT  maximumTEMP; if maximum temp < measured temp skip
+    CPFSLT  maximumTEMP; if 61 < measured temp skip (this means measured temp is negative)
     GOTO _EQUAL
-    GOTO _LED_HEAT
+    GOTO _LED_HEAT ; this happens when measured temp is negative,so it should heat up
 	
 _EQUAL:    
     MOVLW   measuredTempInput
