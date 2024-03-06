@@ -4,12 +4,19 @@
 // Purpose: This program takes input refrence temperature and compares it to an input measured temperature.
 //	    The values of the reference temp is placed into Reg 0x60,0x61,0x62
 //	    The values of the measured temp is placed into Reg 0x70,0x71,0x72
-//	    If the temp is to hot a cooling system is turned on. If the temp is too cold a heating system is turned on
+//	    If the temp is to hot a cooling system is turned on. If the temp is 
+//	    too cold a heating system is turned on
+//	    The binary equivilent of the measured temp are placed into (REG 70,71,72)
+//	    Binary equivilent of reference temperature are placed into (REG 60,61,62)
 // Dependencies:I'am using a file called Header.inc attacted to this project.
 // Compiler: ASM 2.4
 // Author: Nick Kraemer
-// OUTPUTS: outputs of this program? What are they connected to? 
-// INPUTS: inputs of this program? What are they connected to? 
+// OUTPUTS: Binary equivilent of measured temperature (REG 70,71,72)
+//	    Binary equivilent of reference temperature (REG 60,61,62)
+//	    LED_HEAT (portD1)
+//	    LED_COOL (portD2)
+// INPUTS: Refrence temperature(register 20)
+//	    measured temperature (register 21)
 // Versions:
 //  	V1.0: today’s date - First version 
 //  	V1.2: date - Changes something….
@@ -22,8 +29,8 @@
     
 // PROGRAM INPUTS
 //----------------
-#define  refTempInput 		47 ; this is the input value
-#define  measuredTempInput 	0 ; this is the input value
+#define  refTempInput 		15 ; this is the input value
+#define  measuredTempInput 	18 ; this is the input value
 
 
 //----- -----------
@@ -37,8 +44,12 @@
 //----------------
 // PROGRAM OUTPUTS
 //----------------
-
-    
+;RMND_L	EQU 0x70    
+;RMND_M EQU 0x71
+;RMND_H EQU 0x72
+;ref_RMND_L	EQU 0x60
+;ref_RMND_M EQU  0x61
+;ref_RMND_H EQU 0x62
 #define   HEATER  PORTD,2
 #define   COOLER  PORTD,1
 
@@ -54,40 +65,41 @@
     MOVWF   refTempREG  ; put reference temp into reference temp REG
    
 ;-------------------------------------------
-;NUME EQU 0x40 ; location for NUME
-;QU EQU	0x10 ; location for the quotient
-RMND_L	EQU 0x60
-RMND_M EQU  0x61
-RMND_H EQU 0x62
-MYDEN EQU 0x0A
-mynum EQU measuredTempInput	
+;HEX TO DECIMAL CONVERSION
+NUME EQU 0x40 ; location for NUME
+QU EQU	0x10 ; location for the quotient
+RMND_L	EQU 0x70    
+RMND_M EQU  0x71
+RMND_H EQU 0x72
+MYDEN EQU 0x0A	;decrease by 10 each time
+mynum EQU measuredTempInput	;my num = measured temperature
 
 MOVLW mynum
-MOVWF NUME
-MOVLW MYDEN
-_D_1:
-    INCF QU,F
-    SUBWF NUME
-    BC _D_1
-    ADDWF NUME
-    DECF QU,f
+MOVWF NUME  ;mynum into REG0x40
+MOVLW MYDEN ;my den= 10(deicimal)
+_D_1:	;digit 1
+    INCF QU,F	;incrase the quotient
+    SUBWF NUME	;NUME-10
+    BC _D_1	;branch if there is no carry(if positive go to _D_1)
+    ADDWF NUME	; decreased by 10 to many(add 10 back)
+    DECF QU,f	;inceased quotient by 1 too many decrease by 1 
     MOVFF NUME, RMND_L ; save the first digit
-    MOVFF QU,NUME
-    CLRF QU 
-_D_2:
-    INCF    QU,F
+    MOVFF QU,NUME   ; move quotient(whats left) into NUME 
+    CLRF QU	; clear quotient
+_D_2:	;digit 2 same steps as listed above
+    INCF    QU,F 
     SUBWF   NUME
     BC	_D_2
     ADDWF NUME
-    DECF QU,F
-    MOVFF NUME, RMND_M
-    MOVFF QU,RMND_H
+    DECF QU,F	
+    MOVFF NUME, RMND_M ;tens place
+    MOVFF QU,RMND_H;hundreds (not neccessary for this project)
     ;-------------------------------------------
-NUME EQU 0x40 ; location for NUME
-QU EQU	0x10 ; location for the quotient
-ref_RMND_L	EQU 0x70
-ref_RMND_M EQU  0x71
-ref_RMND_H EQU 0x72
+;repeat steps for reference temperature
+;reference function _D_1 for clarification
+ref_RMND_L	EQU 0x60
+ref_RMND_M EQU  0x61
+ref_RMND_H EQU 0x62
 
 refmynum EQU refTempInput	
 
