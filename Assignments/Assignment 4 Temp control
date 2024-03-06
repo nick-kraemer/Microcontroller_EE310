@@ -29,8 +29,8 @@
     
 // PROGRAM INPUTS
 //----------------
-#define  refTempInput 		15 ; this is the input value
-#define  measuredTempInput 	18 ; this is the input value
+#define  refTempInput 		35 ; this is the input value
+#define  measuredTempInput 	28 ; this is the input value
 
 
 //----- -----------
@@ -160,13 +160,13 @@ _LED_OFF:
 _LED_HEAT:
     MOVLW 0x1
     MOVWF contREG 	;set contreg=1
-    MOVLW 0b00000001
+    MOVLW 0b00000010
     MOVWF PORTD ,a
     sleep
 
 _LED_COOL: 
     MOVLW 0x2
     MOVWF contREG 	;set contreg=2
-    MOVLW 0b00000010
+    MOVLW 0b000000100
     MOVWF PORTD,a
     sleep
