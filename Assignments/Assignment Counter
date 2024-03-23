@@ -1,1 +1,72 @@
 
+// Title: Counter
+//-----------------------------
+// Purpose: This program is used to count up and down on a seven segement display using two push buttons
+  //when buttonup is pushed the seven segement counts from 1 to F.And when buttondown is pushed
+  // The seven segment counts down. When both buttons are pushed the seven segment will display 0/
+// Dependencies:I'am using a file called Header.inc attacted to this project.
+// Compiler: ASM 2.4
+// Author: Nick Kraemer
+
+  // OUTPUTS: 
+  //PortB is used as my output for the seven segment
+  
+  // INPUTS:
+  // PortD1 is used as my input from the bottonup
+  // PortD2 is used as my input from the bottondown
+// Versions:
+//  	V1.0: 3/20/24
+//-----------------------------
+; Initialization
+;---------------------
+#include "C:\Users\nkrae\OneDrive\Documents\310 MPlab Assignments\Assignment 6 Counter.X\Header.inc"
+#include <xc.inc>
+    
+    
+// PROGRAM INPUTS
+//----------------
+
+
+//----- -----------
+//REGISTERS
+//----------------
+
+
+//----------------
+// PROGRAM OUTPUTS
+//----------------
+
+
+
+;-----------MAIN CODE------------------
+    PSECT absdata,abs,ovrld        ; Do not change
+
+_Start:
+      CALL _setupPortD
+      Call _setupPortB
+
+
+
+_setupPortD:
+    BANKSEL	PORTD ;
+    CLRF	PORTD ;Init PORTA
+    BANKSEL	LATD ;Data Latch
+    CLRF	LATD ;
+    BANKSEL	ANSELD ;
+    CLRF	ANSELD ;digital I/O
+    BANKSEL	TRISD ;
+    MOVLW	0b11111111 ;Set RD[7:0] as inputs
+    MOVWF	TRISD ;
+    RETURN
+    
+_setupPortB:
+    BANKSEL	PORTB ;
+    CLRF	PORTB ;Init PORTA
+    BANKSEL	LATB ;Data Latch
+    CLRF	LATB ;
+    BANKSEL	ANSELB ;
+    CLRF	ANSELB ;digital I/O
+    BANKSEL	TRISB ;
+    MOVLW	0b00000000 ;Set RD[7:0] as outputs
+    MOVWF	TRISB ;
+    RETURN    
