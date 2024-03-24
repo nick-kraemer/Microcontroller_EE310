@@ -44,11 +44,11 @@ REG11   equ     11h
     PSECT absdata,abs,ovrld        ; Do not change
  ORG 0x20
 CALL _initalize
-GOTO _Start
+LFSR 0,0x00 ; load FSR 0 with REG0
+MOVFF INDF0,PORTA ; put a 0 the seven seg
+ GOTO _Start
 _Start:
      
-      LFSR 0,0x00 ; load FSR 0 with REG0
-      MOVFF INDF0,PORTA ; put a 0 the seven seg
       BTFSC PORTD,1 ; if PORTD1 is 0 skip next line
       CALL _countup
       BTFSC PORTD,2 ; if PORTD2 is 0 skip next line
@@ -68,6 +68,9 @@ _countup:
 
 _countdown:
     ;CALL loopDelay
+    MOVLW 0x10
+    CPFSLT FSR0 ; if FSR0 < 10 then skip
+    LFSR 0,0x0F
     MOVFF POSTDEC0,PORTA ; reads FSR0 then decrements it
     BTFSS PORTD,2 ; if PORTD2 is still 1 skip next line
     return
