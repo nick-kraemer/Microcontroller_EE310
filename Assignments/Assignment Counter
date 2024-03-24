@@ -48,16 +48,26 @@ LFSR 0,0x00 ; load FSR 0 with REG0
 MOVFF INDF0,PORTA ; put a 0 the seven seg
  GOTO _Start
 _Start:
-     
+     CALL _reset
       BTFSC PORTD,1 ; if PORTD1 is 0 skip next line
       CALL _countup
       BTFSC PORTD,2 ; if PORTD2 is 0 skip next line
       CALL _countdown
       GOTO _Start
       
-      
+_reset:
+    BTFSS PORTD,1 ; if PORTD1 is 1 skip
+    return
+    BTFSS PORTD,2; if PORTD2 is 1 skip
+    return
+    LFSR 0,0x00
+    MOVFF INDF0,PORTA ;
+    GOTO _reset
+   
 _countup:
     ;CALL loopDelay
+     BTFSC PORTD,2 ;if portD2 is 0 skip next line
+    return
     MOVLW 0x10
     CPFSLT FSR0 ; if FSR0< 10 then skip
     LFSR 0,0x00
@@ -68,6 +78,8 @@ _countup:
 
 _countdown:
     ;CALL loopDelay
+    BTFSC PORTD,1 ;if portD1 is 0 skip next line
+    return
     MOVLW 0x10
     CPFSLT FSR0 ; if FSR0 < 10 then skip
     LFSR 0,0x0F
