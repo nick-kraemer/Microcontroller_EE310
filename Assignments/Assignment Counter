@@ -25,12 +25,14 @@
     
 // PROGRAM INPUTS
 //----------------
-
+Inner_loop  equ 0xFF
+Outer_loop  equ 0xFF
 
 //----- -----------
 //REGISTERS
 //----------------
-
+REG10   equ     10h   
+REG11   equ     11h
 
 //----------------
 // PROGRAM OUTPUTS
@@ -40,13 +42,92 @@
 
 ;-----------MAIN CODE------------------
     PSECT absdata,abs,ovrld        ; Do not change
-
+ ORG 0x20
+ CALL _initalize
+GOTO _Start
 _Start:
-      CALL _setupPortD
-      Call _setupPortB
+     
+      LFSR 0,0x00 ; load FSR 0 with REG0
+      MOVFF INDF0,PORTA ; put a 0 the seven seg
+      BTFSC PORTD,1 ; if PORTD1 is 0 skip next line
+      CALL _countup
+      BTFSC PORTD,2 ; if PORTD2 is 0 skip next line
+      CALL _countdown
+      GOTO _Start
+      
+      
+_countup:
+    CALL loopDelay
+    MOVFF POSTINC0,PORTA ; reads FSR0 then increments it
+    BTFSS PORTD,1 ; if PORTD1 is still 1 skip next line
+    return
+    GOTO _countup
 
-
-
+_countdown:
+    CALL loopDelay
+    MOVFF POSTDEC0,PORTA ; reads FSR0 then decrements it
+    BTFSS PORTD,2 ; if PORTD2 is still 1 skip next line
+    return
+    GOTO _countdown
+    
+    
+    
+_initalize:
+    
+    MOVLW 0x3F ;SS for 0
+    MOVWF 0x00
+    MOVLW 0x06 ;SS for 1
+    MOVWF 0x01
+    MOVLW 0x5B;SS for 2
+    MOVWF 0x02
+    MOVLW 0x4F;SS for 3
+    MOVWF 0x03
+    MOVLW 0x66;SS for 4
+    MOVWF 0x04
+    MOVLW 0x6D;SS for 5
+    MOVWF 0x05
+    MOVLW 0x7D;SS for 6
+    MOVWF 0x06
+    MOVLW 0x07;SS for 7
+    MOVWF 0x07
+    MOVLW 0x7F;SS for 8
+    MOVWF 0x08
+    MOVLW 0x6F;SS for 9
+    MOVWF 0x09
+    MOVLW 0x77;SS for A
+    MOVWF 0x0A
+    MOVLW 0x7C ;SS for B
+    MOVWF 0x0B
+    MOVLW 0x58;SS for C
+    MOVWF 0x0C
+    MOVLW 0x5E;SS for D
+    MOVWF 0x0D
+    MOVLW 0x79;SS for E
+    MOVWF 0x0E
+    MOVLW 0x71;SS for F
+    MOVWF 0x0F
+    CALL _setupPortD
+    Call _setupPortB
+    return
+    
+;The Delay Subroutine    
+loopDelay: 
+    MOVLW       Inner_loop
+    MOVWF       REG10
+    MOVLW       Outer_loop
+    MOVWF       REG11
+_loop1:
+    DECF        REG10,1
+    BNZ         _loop1
+    MOVLW       Inner_loop ; Re-initialize the inner loop for when the outer loop decrements.
+    MOVWF       REG10
+    DECF        REG11,1 // outer loop
+    BNZ        _loop1
+    RETURN
+      
+      
+      
+      
 _setupPortD:
     BANKSEL	PORTD ;
     CLRF	PORTD ;Init PORTA
