@@ -43,7 +43,7 @@ REG11   equ     11h
 ;-----------MAIN CODE------------------
     PSECT absdata,abs,ovrld        ; Do not change
  ORG 0x20
- CALL _initalize
+CALL _initalize
 GOTO _Start
 _Start:
      
@@ -57,14 +57,17 @@ _Start:
       
       
 _countup:
-    CALL loopDelay
+    ;CALL loopDelay
+    MOVLW 0x10
+    CPFSLT FSR0 ; if FSR0< 10 then skip
+    LFSR 0,0x00
     MOVFF POSTINC0,PORTA ; reads FSR0 then increments it
     BTFSS PORTD,1 ; if PORTD1 is still 1 skip next line
     return
     GOTO _countup
 
 _countdown:
-    CALL loopDelay
+    ;CALL loopDelay
     MOVFF POSTDEC0,PORTA ; reads FSR0 then decrements it
     BTFSS PORTD,2 ; if PORTD2 is still 1 skip next line
     return
