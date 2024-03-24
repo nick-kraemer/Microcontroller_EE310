@@ -56,6 +56,7 @@ _Start:
       GOTO _Start
       
 _reset:
+    CALL loopDelay
     BTFSS PORTD,1 ; if PORTD1 is 1 skip
     return
     BTFSS PORTD,2; if PORTD2 is 1 skip
@@ -65,7 +66,7 @@ _reset:
     GOTO _reset
    
 _countup:
-    ;CALL loopDelay
+    CALL loopDelay
      BTFSC PORTD,2 ;if portD2 is 0 skip next line
     return
     MOVLW 0x10
@@ -77,7 +78,7 @@ _countup:
     GOTO _countup
 
 _countdown:
-    ;CALL loopDelay
+    CALL loopDelay
     BTFSC PORTD,1 ;if portD1 is 0 skip next line
     return
     MOVLW 0x10
@@ -125,7 +126,7 @@ _initalize:
     MOVLW 0x71;SS for F
     MOVWF 0x0F
     CALL _setupPortD
-    Call _setupPortB
+    Call _setupPortA
     return
     
 ;The Delay Subroutine    
@@ -158,14 +159,14 @@ _setupPortD:
     MOVWF	TRISD ;
     RETURN
     
-_setupPortB:
-    BANKSEL	PORTB ;
-    CLRF	PORTB ;Init PORTA
-    BANKSEL	LATB ;Data Latch
-    CLRF	LATB ;
-    BANKSEL	ANSELB ;
-    CLRF	ANSELB ;digital I/O
-    BANKSEL	TRISB ;
+_setupPortA:
+    BANKSEL	PORTA ;
+    CLRF	PORTA ;Init PORTA
+    BANKSEL	LATA ;Data Latch
+    CLRF	LATA ;
+    BANKSEL	ANSELA ;
+    CLRF	ANSELA ;digital I/O
+    BANKSEL	TRISA ;
     MOVLW	0b00000000 ;Set RD[7:0] as outputs
-    MOVWF	TRISB ;
+    MOVWF	TRISA ;
     RETURN    
