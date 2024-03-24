@@ -9,7 +9,7 @@
 // Author: Nick Kraemer
 
   // OUTPUTS: 
-  //PortB is used as my output for the seven segment
+  //PortA is used as my output for the seven segment
   
   // INPUTS:
   // PortD1 is used as my input from the bottonup
