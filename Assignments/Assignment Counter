@@ -57,7 +57,7 @@ _Start:
       GOTO _Start
       
 _reset:
-    CALL loopDelay
+   CALL loopDelay
     BTFSS PORTD,1 ; if PORTD1 is 1 skip
     return
     BTFSS PORTD,2; if PORTD2 is 1 skip
@@ -86,8 +86,8 @@ _countdown:
     return
     MOVFF INDF0,PORTC;added
     MOVFF POSTDEC0,PORTA ; reads FSR0 then decrements it
-    MOVLW 0x11
-    CPFSLT FSR0 ; if FSR0 < 11 then skip
+    MOVLW 0x00
+    CPFSGT FSR0 ; if FSR0 > 0 then skip
     LFSR 0,0x10
     
     
