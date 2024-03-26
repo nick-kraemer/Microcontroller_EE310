@@ -1,4 +1,3 @@
-
 // Title: Counter
 //-----------------------------
 // Purpose: This program is used to count up and down on a seven segement display using two push buttons
@@ -46,6 +45,7 @@ REG11   equ     11h
 CALL _initalize
 LFSR 0,0x00 ; load FSR 0 with REG0
 MOVFF INDF0,PORTA ; put a 0 the seven seg
+MOVFF INDF0,PORTC ; put a 0 the seven seg
  GOTO _Start
 _Start:
      CALL _reset
@@ -63,6 +63,7 @@ _reset:
     return
     LFSR 0,0x00
     MOVFF INDF0,PORTA ;
+    MOVFF INDF0,PORTC ;added
     GOTO _reset
    
 _countup:
@@ -72,7 +73,8 @@ _countup:
     MOVLW 0x10
     CPFSLT FSR0 ; if FSR0< 10 then skip
     LFSR 0,0x00
-    MOVFF PREINC0,PORTA ; reads FSR0 then increments it
+    MOVFF PREINC0,PORTA ;   increments FSR0 then reads it
+    MOVFF INDF0,PORTC;added
     BTFSS PORTD,1 ; if PORTD1 is still 1 skip next line
     return
     GOTO _countup
@@ -84,7 +86,9 @@ _countdown:
     MOVLW 0x10
     CPFSLT FSR0 ; if FSR0 < 10 then skip
     LFSR 0,0x0F
+    MOVFF INDF0,PORTC;added
     MOVFF POSTDEC0,PORTA ; reads FSR0 then decrements it
+    
     BTFSS PORTD,2 ; if PORTD2 is still 1 skip next line
     return
     GOTO _countdown
@@ -127,6 +131,7 @@ _initalize:
     MOVWF 0x0F
     CALL _setupPortD
     Call _setupPortA
+    Call _setupPortC
     return
     
 ;The Delay Subroutine    
@@ -169,4 +174,16 @@ _setupPortA:
     BANKSEL	TRISA ;
     MOVLW	0b00000000 ;Set RD[7:0] as outputs
     MOVWF	TRISA ;
+    RETURN    
+
+_setupPortC:
+    BANKSEL	PORTC ;
+    CLRF	PORTC ;Init PORTA
+    BANKSEL	LATC ;Data Latch
+    CLRF	LATC ;
+    BANKSEL	ANSELC ;
+    CLRF	ANSELC ;digital I/O
+    BANKSEL	TRISC ;
+    MOVLW	0b00000000 ;Set RD[7:0] as outputs
+    MOVWF	TRISC ;
     RETURN    
