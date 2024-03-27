@@ -156,7 +156,7 @@ _loop1:
       
 _setupPortD:
     BANKSEL	PORTD ;
-    CLRF	PORTD ;Init PORTA
+    CLRF	PORTD ;Init PORTD
     BANKSEL	LATD ;Data Latch
     CLRF	LATD ;
     BANKSEL	ANSELD ;
@@ -180,7 +180,7 @@ _setupPortA:
 
 _setupPortC:
     BANKSEL	PORTC ;
-    CLRF	PORTC ;Init PORTA
+    CLRF	PORTC ;Init PORTC
     BANKSEL	LATC ;Data Latch
     CLRF	LATC ;
     BANKSEL	ANSELC ;
