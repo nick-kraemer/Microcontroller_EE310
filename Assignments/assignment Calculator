@@ -1,0 +1,90 @@
+
+/*
+ * File:   main.c
+ * Author: nkrae
+ *
+ * Created on April 1, 2024, 4:15 PM
+ */
+
+
+
+
+#include <xc.h>
+#include "C:/Program Files/Microchip/xc8/v2.46/pic/include/proc/pic18f47k42.h"
+#include "xc8_header.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int X_Input_REG __at(0x01);
+int Y_Input_REG __at(0x03);
+int Display_Result_REG __at(0x05);
+
+unsigned char button;
+int a;
+//function definitions
+void initializePORTB();
+void initializePORTD(); //keypad
+void setup();
+void check_keypad();
+
+void main(void) {
+    setup();
+    check_keypad();
+    X_Input_REG=X_Input_REG+(button*10);
+    check_keypad();
+     X_Input_REG=X_Input_REG+button;
+    return;
+}
+
+void check_keypad(){
+    a=0;
+    
+    while (a<1) // wait until a button is pressed
+    {
+    PORTDbits.RD3=1; // check first column
+    if (PORTDbits.RD7==1) button=1, a=a+1;
+    else if (PORTDbits.RD6==1) button=4, a=a+1;
+    else if (PORTDbits.RD5==1) button=7, a=a+1;
+    PORTDbits.RD3=0;
+    
+    PORTDbits.RD2=1; // check 2nd column
+    if (PORTDbits.RD7==1) button=2, a=a+1;
+    else if (PORTDbits.RD6==1) button=5, a=a+1;
+    else if (PORTDbits.RD5==1) button=8, a=a+1;
+    else if (PORTDbits.RD4==1) button=0, a=a+1;
+     PORTDbits.RD2=0;
+    
+    PORTDbits.RD1==1; // check 3rd column
+    if (PORTDbits.RD7==1) button=3, a=a+1;
+    else if (PORTDbits.RD6==1) button=6, a=a+1;
+    else if (PORTDbits.RD5==1) button=9, a=a+1;
+    PORTDbits.RD1=0;
+    
+    }
+}
+
+
+
+
+
+void setup(){
+    initializePORTB();
+    initializePORTD();
+    X_Input_REG=0;
+    button=0;
+}
+
+
+void initializePORTB(){
+    PORTB=0;
+    LATB=0;
+    ANSELB=0;
+    TRISB=0b00000000;
+}
+void initializePORTD(){
+    PORTD=0;
+    LATD=0;
+    ANSELD=0;
+    TRISD=0b11110000;
+}
