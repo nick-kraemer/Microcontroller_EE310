@@ -47,7 +47,7 @@ void main(void) {
      PORTBbits.RB1=1; // turn on second led
      solve();
      PORTBbits.RB1=0;// turn off second led
-     // need to move display result reg onto PORTB
+     PORTB=Display_Result_REG;//move display result reg onto PORTB
     return;
 }
 
