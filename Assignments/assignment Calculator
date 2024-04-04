@@ -1,4 +1,3 @@
-
 /*
  * File:   main.c
  * Author: nkrae
@@ -18,22 +17,37 @@
 
 int X_Input_REG __at(0x01);
 int Y_Input_REG __at(0x03);
-int Display_Result_REG __at(0x05);
+int Operation_REG __at(0x05);
+int Display_Result_REG __at(0x07);
 
 unsigned char button;
 int a;
+int b;
 //function definitions
 void initializePORTB();
 void initializePORTD(); //keypad
 void setup();
 void check_keypad();
+void operation();
+void solve();
 
 void main(void) {
     setup();
     check_keypad();
-    X_Input_REG=X_Input_REG+(button*10);
+    X_Input_REG=X_Input_REG+(button*10); //first digit(tens)
     check_keypad();
-     X_Input_REG=X_Input_REG+button;
+     X_Input_REG=X_Input_REG+button; // second digit(ones))
+     PORTBbits.RB0=1; // turn on first led
+     operation();
+     check_keypad();
+     Y_Input_REG=Y_Input_REG+(button*10);
+     check_keypad();
+     Y_Input_REG=Y_Input_REG+button;
+     PORTBbits.RB0=0; // turn off first led
+     PORTBbits.RB1=1; // turn on second led
+     solve();
+     PORTBbits.RB1=0;// turn off second led
+     // need to move display result reg onto PORTB
     return;
 }
 
@@ -65,7 +79,25 @@ void check_keypad(){
 }
 
 
+void operation(){
+    b=0;
+    while (b<1)
+    {
+    PORTDbits.RD0==1; // check 4th column
+    if (PORTDbits.RD7==1) Operation_REG=1, b=b+1; //addition
+    else if (PORTDbits.RD6==1) Operation_REG=2, b=b+1;//subtraction
+    else if (PORTDbits.RD5==1) Operation_REG=3, b=b+1;//multiplication
+    else if (PORTDbits.RD4==1) Operation_REG=4, b=b+1;// division
+    PORTDbits.RD0=0;
+    }
+}
 
+void solve(){
+    if (Operation_REG==1) Display_Result_REG=(X_Input_REG+Y_Input_REG);
+    else if(Operation_REG==2) Display_Result_REG=(X_Input_REG-Y_Input_REG);
+    else if(Operation_REG==3) Display_Result_REG=(X_Input_REG*Y_Input_REG);
+    else if(Operation_REG==24) Display_Result_REG=(X_Input_REG/Y_Input_REG);
+}
 
 
 void setup(){
@@ -73,6 +105,8 @@ void setup(){
     initializePORTD();
     X_Input_REG=0;
     button=0;
+    Operation_REG=0;
+    Display_Result_REG=0;
 }
 
 
