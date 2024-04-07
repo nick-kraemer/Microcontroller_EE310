@@ -4,6 +4,25 @@
  *
  * Created on April 1, 2024, 4:15 PM
  */
+// Title: Calculator
+//-----------------------------
+// Purpose: This program is used as a simple calculator. This program first receives an input  number from the user (0-99).
+// It then receives a operation from the user addition, subtraction, multiplication, or division
+// The program then receives a second input number (0-99)
+// finally the program calculates the solution and sends it to PORTB)
+// Dependencies: I'am using a file called xc8_header.h attached to this project.
+// Compiler: XC8
+// Author: Nick Kraemer
+
+  // OUTPUTS: 
+  //PORTB is used to display the solution
+// PORTD0-PORTD3 is used to send voltage to a keypad
+  
+  // INPUTS:
+  // PortD4-PORTD7 is used to receive from the keypad
+// Versions:
+//  	V1.0: 4/7/24
+//-----------------------------
 
 
 
@@ -40,24 +59,22 @@ void main(void) {
     setup();
     check_keypad();
     X_Input_REG=X_Input_REG+(button*10); //first digit(tens)
-    __delay_ms(1000);
+    __delay_ms(1000); //delay 1 second
     check_keypad();
      X_Input_REG=X_Input_REG+button; // second digit(ones)
      PORTBbits.RB0=1; // turn on first led
-     
-     operation();
-     
+     operation(); // (+,-,*,/))
      check_keypad();
      Y_Input_REG=Y_Input_REG+(button*10);//first digit(tens)
-     __delay_ms(1000);
+     __delay_ms(1000);//delay 1 second
      check_keypad();
      Y_Input_REG=Y_Input_REG+button;// second digit(ones)
      PORTBbits.RB0=0; // turn off first led
      PORTBbits.RB1=1; // turn on second led
-     solve();
+     solve(); 
      PORTBbits.RB1=0;// turn off second led
      PORTB=Display_Result_REG;//move display result reg onto PORTB
-     __delay_ms(10000);
+     __delay_ms(10000); // delay for 10 seconds so the user can see the solution on PORTB
     }
     return;
 }
@@ -73,7 +90,7 @@ void check_keypad(){
     else if (PORTDbits.RD5==1) button=7, a=a+1;
     PORTDbits.RD3=0;
     
-    //might need a delay between each column
+   
     
     PORTDbits.RD2=1; // check 2nd column
     if (PORTDbits.RD7==1) button=2, a=a+1;
@@ -121,6 +138,7 @@ void solve(){
 }
 
 
+//setup and reset
 void setup(){
     initializePORTB();
     initializePORTD();
