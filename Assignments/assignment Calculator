@@ -15,39 +15,50 @@
 #include <stdlib.h>
 #include <math.h>
 
-int X_Input_REG __at(0x01);
-int Y_Input_REG __at(0x03);
-int Operation_REG __at(0x05);
-int Display_Result_REG __at(0x07);
+int X_Input_REG __at(0x01); // first number
+int Y_Input_REG __at(0x03); //second number
+int Operation_REG __at(0x05);//(+,-,*,/))
+int Display_Result_REG __at(0x07); //solution
 
 unsigned char button;
 int a;
 int b;
+int c;
+
 //function definitions
-void initializePORTB();
+void initializePORTB(); //led
 void initializePORTD(); //keypad
 void setup();
 void check_keypad();
 void operation();
 void solve();
+#define _XTAL_FREQ 4000000
 
 void main(void) {
+    while(1) // loop forever
+    {
     setup();
     check_keypad();
     X_Input_REG=X_Input_REG+(button*10); //first digit(tens)
+    __delay_ms(1000);
     check_keypad();
-     X_Input_REG=X_Input_REG+button; // second digit(ones))
+     X_Input_REG=X_Input_REG+button; // second digit(ones)
      PORTBbits.RB0=1; // turn on first led
+     
      operation();
+     
      check_keypad();
-     Y_Input_REG=Y_Input_REG+(button*10);
+     Y_Input_REG=Y_Input_REG+(button*10);//first digit(tens)
+     __delay_ms(1000);
      check_keypad();
-     Y_Input_REG=Y_Input_REG+button;
+     Y_Input_REG=Y_Input_REG+button;// second digit(ones)
      PORTBbits.RB0=0; // turn off first led
      PORTBbits.RB1=1; // turn on second led
      solve();
      PORTBbits.RB1=0;// turn off second led
      PORTB=Display_Result_REG;//move display result reg onto PORTB
+     __delay_ms(10000);
+    }
     return;
 }
 
@@ -62,6 +73,8 @@ void check_keypad(){
     else if (PORTDbits.RD5==1) button=7, a=a+1;
     PORTDbits.RD3=0;
     
+    //might need a delay between each column
+    
     PORTDbits.RD2=1; // check 2nd column
     if (PORTDbits.RD7==1) button=2, a=a+1;
     else if (PORTDbits.RD6==1) button=5, a=a+1;
@@ -69,7 +82,7 @@ void check_keypad(){
     else if (PORTDbits.RD4==1) button=0, a=a+1;
      PORTDbits.RD2=0;
     
-    PORTDbits.RD1==1; // check 3rd column
+    PORTDbits.RD1=1; // check 3rd column
     if (PORTDbits.RD7==1) button=3, a=a+1;
     else if (PORTDbits.RD6==1) button=6, a=a+1;
     else if (PORTDbits.RD5==1) button=9, a=a+1;
@@ -83,7 +96,7 @@ void operation(){
     b=0;
     while (b<1)
     {
-    PORTDbits.RD0==1; // check 4th column
+    PORTDbits.RD0=1; // check 4th column
     if (PORTDbits.RD7==1) Operation_REG=1, b=b+1; //addition
     else if (PORTDbits.RD6==1) Operation_REG=2, b=b+1;//subtraction
     else if (PORTDbits.RD5==1) Operation_REG=3, b=b+1;//multiplication
@@ -93,10 +106,18 @@ void operation(){
 }
 
 void solve(){
+    c=0;
+    while (c<1) // keep checking if # button is pushed 
+    {
+    PORTDbits.RD1=1;
+    if (PORTDbits.RD4==1) c=c+1;
+    }
     if (Operation_REG==1) Display_Result_REG=(X_Input_REG+Y_Input_REG);
     else if(Operation_REG==2) Display_Result_REG=(X_Input_REG-Y_Input_REG);
     else if(Operation_REG==3) Display_Result_REG=(X_Input_REG*Y_Input_REG);
-    else if(Operation_REG==24) Display_Result_REG=(X_Input_REG/Y_Input_REG);
+    else if(Operation_REG==4) Display_Result_REG=(X_Input_REG/Y_Input_REG);
+    PORTDbits.RD1=0;
+    
 }
 
 
@@ -104,9 +125,11 @@ void setup(){
     initializePORTB();
     initializePORTD();
     X_Input_REG=0;
+    Y_Input_REG=0;
     button=0;
     Operation_REG=0;
     Display_Result_REG=0;
+    PORTB=00;
 }
 
 
