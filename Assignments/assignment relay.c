@@ -57,20 +57,28 @@
 #pragma config CP = OFF         // PFM and Data EEPROM Code Protection bit (PFM and Data EEPROM code protection disabled)
 
 #include <xc.h> // must have this
-//#include "../../../../../Program Files/Microchip/xc8/v2.40/pic/include/proc/pic18f46k42.h"
-//#include "C:\Program Files\Microchip\xc8\v2.40\pic\include\proc\pic18f46k42"
 
-#define _XTAL_FREQ 4000000                 // Fosc  frequency for _delay()  library
+
+#define _XTAL_FREQ 4000000  // Fosc  frequency for _delay()  library
 #define FCY    _XTAL_FREQ/4
 int x;
-
+int y;
+int number1;
+int number2;
+int secret_code;
+void initializePORTB(void); 
+void initializePORTD(void); 
 // Defining Interrupt ISR 
+//emergency switch
 void __interrupt(irq(IRQ_INT0),base(0x4008)) INT0_ISR(void)
 {
     if (PIR1bits.INT0IF==1) // Check if interrupt flag for INT0 is set to 1 - (note INT0 is your input)
     {
-     x=0;
+     //check if emergency button has been pressed
       
+        
+        
+       PIR1bits.INT0IF=0; // always clear the interrupt flag for INT0 when done
     }
     
 }
@@ -93,24 +101,62 @@ void INTERRUPT_Initialize (void)
 }
 
 void main(void) {
-    
+    while(1){
     // Initialization  
-    // set port B and D as outputs 
+    secret_code=23; // this can be changed
+    WPUB=0xFF;// enable the weak pull-ups are enabled for port B
+    
+    INTERRUPT_Initialize();// initialize the interrupt_initialization by calling the proper function
+    initializePORTB();
+    initializePORTD();
+    // main code here 
+    x=0;
+    number1=0;
+    while (x<1){
+    // read from photo resister1 
+    if (PORTBbits.RB0==1){
+        number1++;
+        __delay_ms(2000);
+    }
+    if (PORTBbits.RB7==1){
+        x=x+1;//  button is pushed to show end of input1
+ //       __delay_ms(2000);
+    }
+    
+    }
+    
+    
+    //read from photo resister2
+    y=0;
+    number2=0;
+    while (y<1){
+    // read from photo resister1 
+    if (PORTBbits.RB1==1){
+        number2++;
+  //      __delay_ms(2000);
+    }
+    if (PORTBbits.RB7==1){
+        y=y+1;//  button is pushed to show end of input2
+ //       __delay_ms(2000);
+    }
+    }
+    //display entered value on leds
+    
+    //if secret code is correct (turn on motor)
+    
+    //if secret code is wrong buzzer will be turned on)
+    
+}
+}
+void initializePORTB(){
     PORTB=0;
     LATB=0;
     ANSELB=0;
-    TRISB=0b00000001;
-    
+    TRISB=0b11111111; // inputs
+}
+void initializePORTD(){
     PORTD=0;
     LATD=0;
     ANSELD=0;
     TRISD=0b00000000;
-    
-    WPUB=0xFF;// enable the weak pull-ups are enabled for port B
-
-    INTERRUPT_Initialize();// initialize the interrupt_initialization by calling the proper function
-
-    // main code here 
-   
 }
-
