@@ -65,9 +65,13 @@ int x;
 int y;
 int number1;
 int number2;
+int guess;
 int secret_code;
-void initializePORTB(void); 
-void initializePORTD(void); 
+unsigned char sevenSegValues[] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x67,0x00,0x79};
+
+void initializePORTB(void); //inputs: photoresistors,button
+void initializePORTD(void); //seven segment
+void initializePORTA(void); //motor and relay
 // Defining Interrupt ISR 
 //emergency switch
 void __interrupt(irq(IRQ_INT0),base(0x4008)) INT0_ISR(void)
@@ -109,18 +113,22 @@ void main(void) {
     INTERRUPT_Initialize();// initialize the interrupt_initialization by calling the proper function
     initializePORTB();
     initializePORTD();
+    initializePORTA();
     // main code here 
     x=0;
     number1=0;
+    PORTD = sevenSegValues[number1];
     while (x<1){
     // read from photo resister1 
     if (PORTBbits.RB0==1){
         number1++;
+        PORTD = sevenSegValues[number1];  
         __delay_ms(2000);
+
     }
     if (PORTBbits.RB7==1){
         x=x+1;//  button is pushed to show end of input1
- //       __delay_ms(2000);
+        __delay_ms(2000);
     }
     
     }
@@ -129,23 +137,36 @@ void main(void) {
     //read from photo resister2
     y=0;
     number2=0;
+    PORTD = sevenSegValues[number2];
     while (y<1){
     // read from photo resister1 
     if (PORTBbits.RB1==1){
         number2++;
-  //      __delay_ms(2000);
+         PORTD = sevenSegValues[number2];
+        __delay_ms(2000);
     }
     if (PORTBbits.RB7==1){
         y=y+1;//  button is pushed to show end of input2
- //       __delay_ms(2000);
+        __delay_ms(2000);
     }
     }
-    //display entered value on leds
+ 
+    guess=(number1*10)+number2;
     
     //if secret code is correct (turn on motor)
-    
+    if (guess==secret_code)
+    {
+     PORTD = sevenSegValues[8];   // just for testing
+      __delay_ms(2000);
+
+    }
     //if secret code is wrong buzzer will be turned on)
-    
+    if (guess!=secret_code)
+    {
+        PORTD = sevenSegValues[9]; // just for testing
+         __delay_ms(2000);
+
+    }
 }
 }
 void initializePORTB(){
@@ -159,4 +180,10 @@ void initializePORTD(){
     LATD=0;
     ANSELD=0;
     TRISD=0b00000000;
+}
+void initializePORTA(){
+    PORTA=0;
+    LATA=0;
+    ANSELA=0;
+    TRISA=0b00000000;
 }
