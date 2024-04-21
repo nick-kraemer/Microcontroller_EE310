@@ -80,9 +80,38 @@ void __interrupt(irq(IRQ_INT0),base(0x4008)) INT0_ISR(void)
     {
      //check if emergency button has been pressed
         PORTAbits.RA1=1;
-        __delay_ms(1000);
+        __delay_ms(100);
         PORTAbits.RA1=0;
+        __delay_ms(300);
         
+        PORTAbits.RA1=1;
+        __delay_ms(100);
+        PORTAbits.RA1=0;
+         __delay_ms(100);
+         
+        PORTAbits.RA1=1;
+        __delay_ms(100);
+        PORTAbits.RA1=0;
+        __delay_ms(100);
+        
+        PORTAbits.RA1=1;
+        __delay_ms(200);
+        PORTAbits.RA1=0;
+        __delay_ms(100);
+        
+        PORTAbits.RA1=1;
+        __delay_ms(100);
+        PORTAbits.RA1=0;
+        __delay_ms(500);
+        
+        PORTAbits.RA1=1;
+        __delay_ms(200);
+        PORTAbits.RA1=0;
+        __delay_ms(100);
+        
+        PORTAbits.RA1=1;
+        __delay_ms(200);
+        PORTAbits.RA1=0;
         
        PIR1bits.INT0IF=0; // always clear the interrupt flag for INT0 when done
     }
@@ -168,7 +197,7 @@ void main(void) {
     else if (guess!=secret_code)
     {
         PORTAbits.RA1=1;
-        __delay_ms(2000);
+        __delay_ms(1000);
         PORTAbits.RA1=0;
     }
 }
