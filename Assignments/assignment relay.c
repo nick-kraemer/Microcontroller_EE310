@@ -79,7 +79,9 @@ void __interrupt(irq(IRQ_INT0),base(0x4008)) INT0_ISR(void)
     if (PIR1bits.INT0IF==1) // Check if interrupt flag for INT0 is set to 1 - (note INT0 is your input)
     {
      //check if emergency button has been pressed
-      
+        PORTAbits.RA1=1;
+        __delay_ms(1000);
+        PORTAbits.RA1=0;
         
         
        PIR1bits.INT0IF=0; // always clear the interrupt flag for INT0 when done
@@ -92,7 +94,7 @@ void INTERRUPT_Initialize (void)
     INTCON0bits.IPEN=1; // Enable interrupt priority bit in INTCON0 (check INTCON0 register and find the bit)
     INTCON0bits.GIEH=1;// Enable high priority interrupts using bits in INTCON0
     INTCON0bits.GIEL=1;// Enable low priority interrupts using bits in INTCON0
-    INTCON0bits.INT0EDG=1;// Interrupt on rising edge of INT0 pin using bits in INTCON0
+    INTCON0bits.INT0EDG=0;// Interrupt on rising edge of INT0 pin using bits in INTCON0
     IPR1bits.INT0IP=1;// Set the interrupt high priority (IP) for INT0 - INT0IP
     PIE1bits.INT0IE=1;// Enable the interrupt (IE) for INT0
 
@@ -120,7 +122,7 @@ void main(void) {
     PORTD = sevenSegValues[number1];
     while (x<1){
     // read from photo resister1 
-    if (PORTBbits.RB0==1){
+    if (PORTBbits.RB2==1){
         number1++;
         PORTD = sevenSegValues[number1];  
         __delay_ms(2000);
@@ -156,16 +158,18 @@ void main(void) {
     //if secret code is correct (turn on motor)
     if (guess==secret_code)
     {
-     PORTD = sevenSegValues[8];   // just for testing
-      __delay_ms(2000);
-
+        
+        PORTBbits.RB3=1;
+        __delay_ms(2000);
+        PORTBbits.RB3=0;
+        
     }
     //if secret code is wrong buzzer will be turned on)
-    if (guess!=secret_code)
+    else if (guess!=secret_code)
     {
-        PORTD = sevenSegValues[9]; // just for testing
-         __delay_ms(2000);
-
+        PORTAbits.RA1=1;
+        __delay_ms(2000);
+        PORTAbits.RA1=0;
     }
 }
 }
@@ -173,7 +177,7 @@ void initializePORTB(){
     PORTB=0;
     LATB=0;
     ANSELB=0;
-    TRISB=0b11111111; // inputs
+    TRISB=0b11110111; // inputs
 }
 void initializePORTD(){
     PORTD=0;
