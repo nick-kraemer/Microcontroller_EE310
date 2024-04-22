@@ -78,9 +78,9 @@ void __interrupt(irq(IRQ_INT0),base(0x4008)) INT0_ISR(void)
 {
     if (PIR1bits.INT0IF==1) // Check if interrupt flag for INT0 is set to 1 - (note INT0 is your input)
     {
-        if (PORTBbits.RB3 ==0){
+        if (PORTBbits.RB3 ==0){ // preventing interrupt from accidentally going off when not supposed too
      //check if emergency button has been pressed
-        PORTAbits.RA1=1;
+        PORTAbits.RA1=1;//beep a little bop
         __delay_ms(100);
         PORTAbits.RA1=0;
         __delay_ms(300);
