@@ -193,11 +193,11 @@ void main(void) {
     {
         
         PORTBbits.RB3=1;
-        PIR1bits.INT0IF=0; //fixed interrupt
+        
         __delay_ms(2000);
-        PIR1bits.INT0IF=0; //fixed interrupt
+       
         PORTBbits.RB3=0;
-        PIR1bits.INT0IF=0; //fixed interrupt
+        
         
     }
     //if secret code is wrong buzzer will be turned on)
