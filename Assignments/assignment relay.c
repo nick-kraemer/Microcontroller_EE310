@@ -75,11 +75,13 @@ void initializePORTA(void); //motor and relay
 // Defining Interrupt ISR 
 //emergency switch
 void __interrupt(irq(IRQ_INT0),base(0x4008)) INT0_ISR(void)
-{
+{//check if emergency button has been pressed
     if (PIR1bits.INT0IF==1) // Check if interrupt flag for INT0 is set to 1 - (note INT0 is your input)
     {
+       
+        
         if (PORTBbits.RB3 ==0){ // preventing interrupt from accidentally going off when not supposed too
-     //check if emergency button has been pressed
+     
         PORTAbits.RA1=1;//beep a little bop
         __delay_ms(100);
         PORTAbits.RA1=0;
@@ -140,7 +142,7 @@ void INTERRUPT_Initialize (void)
 void main(void) {
     while(1){
     // Initialization  
-    secret_code=23; // this can be changed
+    secret_code=11; // this can be changed
    // WPUB=0xFF;// enable the weak pull-ups are enabled for port B
     
     INTERRUPT_Initialize();// initialize the interrupt_initialization by calling the proper function
@@ -191,8 +193,11 @@ void main(void) {
     {
         
         PORTBbits.RB3=1;
+        PIR1bits.INT0IF=0; //maybe
         __delay_ms(2000);
+        PIR1bits.INT0IF=0; //maybe
         PORTBbits.RB3=0;
+        PIR1bits.INT0IF=0; //maybe
         
     }
     //if secret code is wrong buzzer will be turned on)
