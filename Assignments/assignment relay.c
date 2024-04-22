@@ -123,7 +123,7 @@ void INTERRUPT_Initialize (void)
     INTCON0bits.IPEN=1; // Enable interrupt priority bit in INTCON0 (check INTCON0 register and find the bit)
     INTCON0bits.GIEH=1;// Enable high priority interrupts using bits in INTCON0
     INTCON0bits.GIEL=1;// Enable low priority interrupts using bits in INTCON0
-    INTCON0bits.INT0EDG=0;// Interrupt on rising edge of INT0 pin using bits in INTCON0
+    INTCON0bits.INT0EDG=0;// Interrupt on falling  edge of INT0 pin using bits in INTCON0
     IPR1bits.INT0IP=1;// Set the interrupt high priority (IP) for INT0 - INT0IP
     PIE1bits.INT0IE=1;// Enable the interrupt (IE) for INT0
 
@@ -139,7 +139,7 @@ void main(void) {
     while(1){
     // Initialization  
     secret_code=23; // this can be changed
-    WPUB=0xFF;// enable the weak pull-ups are enabled for port B
+   // WPUB=0xFF;// enable the weak pull-ups are enabled for port B
     
     INTERRUPT_Initialize();// initialize the interrupt_initialization by calling the proper function
     initializePORTB();
