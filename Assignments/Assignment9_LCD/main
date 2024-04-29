@@ -79,6 +79,7 @@
 #define Vref 5.0 // voltage reference 
 int digital; // holds the digital value 
 float voltage; // hold the analog value (volt))
+float lux;
 char data[10];
 void ADC_Init(void);
 void LCD_Init();
@@ -104,12 +105,19 @@ void main(void)
         digital = (ADRESH*256) | (ADRESL);/*Combine 8-bit LSB and 2-bit MSB*/
         voltage= digital*((float)Vref/(float)(4096)); 
         
+        //converting voltage into LUX
+        
+        if (voltage<1){lux=voltage*20; }
+        if (voltage>1){lux=voltage*40;}
+        if (voltage>2){lux=voltage*100;}
+        if (voltage>2.5){lux=voltage*500;}
+        
         //print on LCD 
-    LCD_String_xy(1,0,"THE INPUT VOLTAGE:");    /* Display string at location(row,location). */
+    LCD_String_xy(1,0,"INPUT LIGHT:");    /* Display string at location(row,location). */
                                    /* This function passes string to display */
     /*It is used to convert integer value to ASCII string*/
-        sprintf(data,"%.2f",voltage);
-        
+        sprintf(data,"%.2f",lux);
+        strcat(data, " LUX             "); /*Concatenate result and unit to print*/
     LCD_String_xy(2,4,data);/*Send string data for printing*/
     }
       
