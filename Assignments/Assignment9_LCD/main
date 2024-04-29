@@ -108,9 +108,15 @@ void main(void)
         //converting voltage into LUX
         
         if (voltage<1){lux=voltage*20; }
-        if (voltage>1){lux=voltage*40;}
+        if (voltage>1){lux=voltage*30;}
+        if (voltage>1.5){lux=voltage*40;}
+         if (voltage>1.75){lux=voltage*60;}
         if (voltage>2){lux=voltage*100;}
-        if (voltage>2.5){lux=voltage*500;}
+         if (voltage>2.3){lux=voltage*250;}
+        
+        if (voltage>2.75){lux=voltage*600;}
+        if (voltage>3){lux=voltage*800;}
+
         
         //print on LCD 
     LCD_String_xy(1,0,"INPUT LIGHT:");    /* Display string at location(row,location). */
@@ -119,8 +125,9 @@ void main(void)
         sprintf(data,"%.2f",lux);
         strcat(data, " LUX             "); /*Concatenate result and unit to print*/
     LCD_String_xy(2,4,data);/*Send string data for printing*/
+    MSdelay(100);
     }
-      
+    
               
 }
 
