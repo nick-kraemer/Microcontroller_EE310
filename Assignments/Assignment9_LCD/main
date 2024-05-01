@@ -1,12 +1,25 @@
-//
-///*
-// * The purpose of this program is to demonstrate how a 20x2 LCD can be interfaced with a PIC processor. 
-//
-// * Author: NICK Kraemer 
-// */
-//
-//
-// PIC18F46K42 Configuration Bit Settings
+ //* File:   main.c
+ //* Author: nkrae
+ //*
+ //* Created on April 28, 2024, 
+ //*/
+// Title: LCD
+//-----------------------------
+// Purpose: This code is used to convert an analog signal received on PORTA0
+// to a digital  signal (voltage) being transmitted onto PORTB. In this code I also converted
+//my voltage reading into LUX to measure the amount of light in a room using a photo resistor.
+// Compiler: XC8
+// Author: Nick Kraemer
+
+  // OUTPUTS: 
+  //PORTB is used to display the solution on LCD
+
+  //input
+//PORTA0 is used for the analog input signal
+  
+// Versions:
+//  	V1.0: 4/28/24
+//-----------------------------
 
 // 'C' source line config statements
 
@@ -112,11 +125,12 @@ void main(void)
         if (voltage>1.5){lux=voltage*40;}
          if (voltage>1.75){lux=voltage*60;}
         if (voltage>2){lux=voltage*100;}
-         if (voltage>2.3){lux=voltage*250;}
+        
+        if (voltage>2.5){lux=voltage*250;}
         
         if (voltage>2.75){lux=voltage*600;}
         if (voltage>3){lux=voltage*800;}
-
+        
         
         //print on LCD 
     LCD_String_xy(1,0,"INPUT LIGHT:");    /* Display string at location(row,location). */
@@ -125,7 +139,7 @@ void main(void)
         sprintf(data,"%.2f",lux);
         strcat(data, " LUX             "); /*Concatenate result and unit to print*/
     LCD_String_xy(2,4,data);/*Send string data for printing*/
-    MSdelay(100);
+    MSdelay(400);
     }
     
               
