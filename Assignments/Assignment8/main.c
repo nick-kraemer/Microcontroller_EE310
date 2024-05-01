@@ -1,4 +1,26 @@
+//* File:   main.c
+ //* Author: nkrae
+ //*
+ //* Created on April 20, 2024, 
+ //*/
+// Title: Relay
+//-----------------------------
+// Purpose: This code is used to compare an input password (using 2 photo resistors)
+//to the hard coded secret password. If the password is incorrect a buzzer beeps.
+//if the code is correct a motor turns. There is also an ongoing interrupt, which plays a tune when pressed.
+// Compiler: XC8
+// Author: Nick Kraemer
 
+  // OUTPUTS: 
+  //PORTD is used to display the current input number on a seven segment display
+ // portA1 is used for the buzzer
+  //input
+//PORTB1 - photo resistor2
+//PORTB2 - photo resistor1
+  
+// Versions:
+//  	V1.0: 4/28/24
+//-----------------------------
 
 
 
@@ -78,5 +100,4 @@ void main(void) {
     }
 }
 }
-
 
