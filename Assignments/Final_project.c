@@ -79,6 +79,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include "PWM_final.h" // must have this
+#include "configwords_final.h" // must have this -  XC8_ConfigFile.h
 //
 
 #define _XTAL_FREQ 4000000                 // Fosc  frequency for _delay()  library
@@ -91,6 +93,13 @@
 #define LCD_Port TRISB              
 #define LCD_Control TRISC
 #define Vref 5.0 // voltage reference 
+
+#define PWM2_INITIALIZE_DUTY_VALUE 409
+
+uint16_t checkdutyCycle;
+char preScale;
+_Bool pwmStatus;
+
 int digital; // holds the digital value 
 float voltage; // hold the analog value (volt))
 float number;
@@ -99,6 +108,7 @@ float button;
 int a;
 int b;
 int c;
+int pwm_count;
 float input1;
 
 
@@ -117,6 +127,23 @@ void initializePORTD(); //keypad
 
 void main(void)
 {     
+    OSCSTATbits.HFOR =1; // enable  HFINTOSC Oscillator (see clock schematic))
+    OSCFRQ=0x02; // 00=1 MHZ, 02=4MHZ internal - see page 106 of data sheet
+    TMR2_Initialize();
+    TMR2_StartTimer();        
+    
+//    PWM_Output_D8_Enable();
+    PWM2_Initialize();
+    PWM2_LoadDutyValue(PWM2_INITIALIZE_DUTY_VALUE ); // initialize CCPR2H/L
+   // PWM_Output_D8_Disable();
+   // TMR2_StopTimer();  
+
+    // Duty Cycle in percentage 
+    checkdutyCycle =(uint16_t)((100UL*PWM2_INITIALIZE_DUTY_VALUE)/(4*(T2PR+1)));
+    // binary value of Register T2CON.PRESCALE
+    preScale = ((T2CON >> 4) & (0x0F)); 
+    //PWM
+    
     srand(time(NULL));
     //OSCCON=0x72;                   /* Use Internal Oscillator with Frequency 8MHZ */ 
     LCD_Init();                    /* Initialize 16x2 LCD */
@@ -186,7 +213,20 @@ void main(void)
       __delay_ms(500);
        if (input1==number)
        {
-           points=points+1;
+        points=points+1;
+        pwm_count=0;
+        
+        while (pwm_count<10000)
+        {
+        pwmStatus = PWM2_OutputStatusGet();
+        PORTCbits.RC2 = pwmStatus;
+        //T2CON=0x00; // stop the timer & do what you have to do
+        if (PIR4bits.TMR2IF == 1) {
+            PIR4bits.TMR2IF = 0;
+       }
+        pwm_count=pwm_count+1;
+        }
+        PORTCbits.RC2 =0;
        }
        else if (input1!=number)
        {
